@@ -170,36 +170,6 @@
 // }
 
 
-
-const mainInputs = Array.from(document.querySelectorAll(".mainInput"));
-const colorBtns = Array.from(document.querySelectorAll(".color"));
-
-const tabs = ["input", "diaryEntries", "importExport"];
-
-
-const isThemeStore = localStorage.getItem("themeColor");
-if (isThemeStore) {
-    themeColor = JSON.parse(isThemeStore);
-} else {
-    themeColor = "blue";
-}
-
-let activeSelector
-const isSelectorStore = localStorage.getItem("activeSelector");
-if (isSelectorStore) {
-    activeSelector = JSON.parse(isSelectorStore);
-} else {
-    activeSelector = "";
-}
-
-
-
-
-
-mainInputs.forEach(i => i.addEventListener("click", () => activateTab(i)));
-colorBtns.forEach(i => i.addEventListener("click", () => changeColor(i)));
-
-
 const colorsConfig = {
     blue: {
         bgBackground: "#6C8CE2",
@@ -219,9 +189,7 @@ const colorsConfig = {
         activeBtn: "#97089e",
         btnBorder: "#f003fc",
     }
-}
-
-
+};
 
 const showHideConfig = {
     inputBtn: {
@@ -236,66 +204,97 @@ const showHideConfig = {
         show: ".importExport",
         hide: ["#input", ".diaryEntries"]
     },
-}
+};
 
 
-const styleMainButtons = (color) => {
+const mainInputs = Array.from(document.querySelectorAll(".mainInput"));
+const colorBtns = Array.from(document.querySelectorAll(".color"));
+const tabs = ["input", "diaryEntries", "importExport"];
+
+let themeColor = checkLocalStore("themeColor");
+let activeSelector = checkLocalStore("activeSelector", "");
+
+mainInputs.forEach(i => i.addEventListener("click", () => activateTab(i)));
+colorBtns.forEach(i => i.addEventListener("click", () => changeColor(i)));
+
+styleBody(themeColor);
+styleMainButtons(themeColor);
+styleActiveBtn(themeColor);
+showCurrentTabElements(activeSelector);
+
+function styleMainButtons(color) {
     mainInputs.forEach(i => {
+        i.style.background = colorsConfig[color].btnBackground;
+        i.style.border = `2px solid ${colorsConfig[color].activeBtn}`;
+    });
+    const importExportBtns = Array.from(document.querySelectorAll(".import"));
+    importExportBtns.forEach(i => {
         i.style.background = colorsConfig[color].btnBackground;
         i.style.border = `2px solid ${colorsConfig[color].activeBtn}`;
     });
 }
 
-document.querySelector("body").style.background = colorsConfig[themeColor].bgBackground;
+function styleActiveBtn(color) {
+    if (activeSelector) {
+        const btnToStyle = document.querySelector(`#${activeSelector}`);
+        btnToStyle.style.background = colorsConfig[color].activeBtn;
+        btnToStyle.style.border = `2 px solid ${colorsConfig[themeColor].activeBtn}`;
+    }
+}
 
-styleMainButtons(themeColor);
-document.querySelector(`#${activeSelector}`).style.background = colorsConfig[themeColor].activeBtn;
-const toShow = document.querySelector(`${showHideConfig[activeSelector].show}`);
-toShow.style.display = "block";
+function showCurrentTabElements(activeSelector) {
+    if (activeSelector) {
+        const toShow = document.querySelector(`${showHideConfig[activeSelector].show}`);
+        toShow.style.display = "block";
+    }
+}
 
-
-const activateTab = (arg) => {
-    console.log('active tab here..');
-    //deactivate other buttons
-
-
-    styleMainButtons(themeColor);
-    //style active button
-    arg.style.background = colorsConfig[themeColor].activeBtn;;
-    activeSelector = arg.id;
-    localStorage.setItem("activeSelector", JSON.stringify(activeSelector));
-
-    //display hidden
-    const toShow = document.querySelector(`${showHideConfig[arg.id].show}`);
-    toShow.style.display = "block";
-
-
-    //hide to hide
-    const toHideArr = showHideConfig[arg.id].hide;
-    console.log(toHideArr)
+function hideObsoleteTabElements(tab) {
+    const toHideArr = showHideConfig[tab].hide;
     toHideArr.forEach(i => {
         const el = document.querySelector(i);
         el.style.display = "none";
     });
-
 }
 
+function styleBody(themeColor) {
+    document.querySelector("body").style.background = colorsConfig[themeColor].bgBackground;
+}
 
-const changeColor = (arg) => {
-    console.log('change color..');
+function checkLocalStore(key, defaultVal = "blue") {
+    const isValStored = localStorage.getItem(key);
+    if (isValStored) {
+        return JSON.parse(isValStored);
+    } else {
+        return defaultVal;
+    }
+}
 
+function activateTab(arg) {
+    styleMainButtons(themeColor);
+    arg.style.background = colorsConfig[themeColor].activeBtn;;
+    activeSelector = arg.id;
+    localStorage.setItem("activeSelector", JSON.stringify(activeSelector));
+    showCurrentTabElements(arg.id);
+    hideObsoleteTabElements(arg.id);
+}
+
+function changeColor(arg) {
     themeColor = arg.id;
     localStorage.setItem("themeColor", JSON.stringify(themeColor));
-
     styleMainButtons(themeColor);
-
-    const body = document.querySelector("body");
-    body.style.background = colorsConfig[arg.id].bgBackground;
-
-
-
-    const btnToStyle = document.querySelector(`#${activeSelector}`);
-
-    btnToStyle.style.background = colorsConfig[arg.id].activeBtn;
-    btnToStyle.style.border = `2 px solid ${colorsConfig[themeColor].activeBtn}`;
+    styleBody(arg.id);
+    styleActiveBtn(themeColor);
 }
+
+const showAlert = (msg) => {
+    const alert = document.querySelector(".alert");
+    alert.style.display = "block";
+    alert.className = "alert uiText";
+    alert.innerHTML = msg;
+
+    setTimeout(() => {
+        alert.innerHTML = "";
+        alert.style.display = "none";
+    }, 2000);
+};

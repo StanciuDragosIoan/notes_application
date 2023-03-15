@@ -200,8 +200,8 @@ const exportBTN = document.querySelector("#exportBtn");
 const importBTN = document.querySelector("#importBtn");
 
 const exportNotes = () => {
-    // exportBTN.style.backgroundColor = activeColor;
-    // importBTN.style.backgroundColor = inactiveColor;
+    exportBTN.style.backgroundColor = activeColor;
+    importBTN.style.backgroundColor = inactiveColor;
 
     let notesObj = {
         notes,
@@ -227,6 +227,9 @@ exportBtn.addEventListener("click", exportNotes);
  * Import JSON with  notes
  */
 const importNotes = (e) => {
+    importBTN.style.backgroundColor = activeColor;
+    exportBTN.style.backgroundColor = inactiveColor;
+
     document.getElementById("file").addEventListener(
         "change",
         (evt) => {
@@ -242,7 +245,6 @@ const importNotes = (e) => {
                 displayNotes();
             };
             let readValue = reader.readAsText(file);
-            console.log(readValue);
         },
         false
     );

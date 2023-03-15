@@ -263,8 +263,17 @@ body {
   display: none;
 }
 
+#file:hover {
+  cursor: pointer;
+}
+
 .import {
   width: 48% !important;
+}
+
+.import:hover,
+.import:focus {
+  filter: brightness(70%) !important;
 }
 
 .import-file {
