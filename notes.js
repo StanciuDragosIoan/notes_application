@@ -6,6 +6,21 @@ if (localStorage.getItem("notes") === null) {
     notes = JSON.parse(localStorage.getItem("notes"));
 }
 
+//call display notes to see the notes
+displayNotes();
+
+//selectors and event listeners
+const deleteAllBtn = document.querySelector("#deleteNotes");
+deleteAllBtn.addEventListener("click", deleteNotes);
+const filterField = document.querySelector(".filter");
+filterField.addEventListener("click", () => (filterField.value = ""));
+const saveBtn = document.querySelector(".add-note");
+saveBtn.addEventListener("click", grabNote);
+const exportBTN = document.querySelector("#exportBtn");
+const importBTN = document.querySelector("#importBtn");
+exportBTN.addEventListener("click", exportNotes);
+importBTN.addEventListener("click", importNotes);
+
 /*
  * Deletes a note
  */
@@ -48,11 +63,9 @@ const saveNote = (e) => {
             notes[index] = newResource;
         }
     });
-
     localStorage.setItem("notes", JSON.stringify(notes));
-
     let cardToEdit = e.target.parentElement.parentElement.childNodes[1];
-    cardToEdit.contentEditable = "false";
+    cardToEdit.contentEditable = false;
     cardToEdit.style.backgroundColor = "#f0edd9";
     cardToEdit.style.padding = "0";
     const editIcon = e.target.parentElement.parentElement.childNodes[9];
@@ -63,7 +76,7 @@ const saveNote = (e) => {
  * Allows note editing
  */
 const editNote = (e) => {
-    let idToEdit;
+
 
     if (e.target.parentElement.childNodes[5].innerText !== undefined) {
         idToEdit = e.target.parentElement.childNodes[5].innerText
@@ -73,7 +86,7 @@ const editNote = (e) => {
     }
 
     let cardToEdit = e.target.parentElement.childNodes[1];
-    cardToEdit.contentEditable = "true";
+    cardToEdit.contentEditable = true;
     cardToEdit.style.backgroundColor = "#fff";
     cardToEdit.style.padding = "1.5rem";
     const editIcon = e.target.parentElement.childNodes[9];
@@ -87,11 +100,13 @@ const editNote = (e) => {
     e.preventDefault();
 };
 
+
+
 /*
  * Grabs notes from localStorage
  * API and displays them to UI
  */
-const displayNotes = () => {
+function displayNotes() {
     let records = document.querySelector("#records");
     let output = "";
 
@@ -125,14 +140,13 @@ const displayNotes = () => {
     records.innerHTML = output;
 };
 
-//call display notes to see the notes
-displayNotes();
 
-const filterField = document.querySelector(".filter");
-filterField.addEventListener("click", () => (filterField.value = ""));
 
+
+/*
+ * Filters notes by title/date
+ */
 const filter = () => {
-    //filter by title,  date
     document.querySelectorAll(".card").forEach((item) => {
         let value = document.querySelector(".filter").value.toLowerCase();
 
@@ -153,8 +167,7 @@ const filter = () => {
 /*
  * Delete all notes
  */
-const deleteAllBtn = document.querySelector("#deleteNotes");
-const deleteNotes = () => {
+function deleteNotes() {
     deleteAllBtn.style.backgroundColor = "red";
     deleteAllBtn.style.border = "2px solid black";
     notes = [];
@@ -162,12 +175,11 @@ const deleteNotes = () => {
     document.querySelector("#records").innerHTML = "";
     showAlert("Notes deleted Successfully 😉");
 };
-deleteAllBtn.addEventListener("click", deleteNotes);
 
 /*
  * Grabs user note and saves to localStorage API
  */
-const grabNote = (e) => {
+function grabNote(e) {
     const note = {};
     //regexp to 'know' how to put linebreaks
     let noteText = document.querySelector("#note").value;
@@ -190,18 +202,13 @@ const grabNote = (e) => {
     showAlert("Note Saved 😉");
 };
 
-let saveBtn = document.querySelector(".add-note");
-saveBtn.addEventListener("click", grabNote);
+
 
 /*
  * Export  notes as JSON
  */
-const exportBTN = document.querySelector("#exportBtn");
-const importBTN = document.querySelector("#importBtn");
 
-const exportNotes = () => {
-    // exportBTN.style.backgroundColor = activeColor;
-    // importBTN.style.backgroundColor = inactiveColor;
+function exportNotes() {
 
     let notesObj = {
         notes,
@@ -221,12 +228,12 @@ const exportNotes = () => {
     window.URL.revokeObjectURL(url);
 };
 
-exportBtn.addEventListener("click", exportNotes);
+
 
 /*
  * Import JSON with  notes
  */
-const importNotes = (e) => {
+function importNotes(e) {
     document.getElementById("file").addEventListener(
         "change",
         (evt) => {
@@ -247,4 +254,4 @@ const importNotes = (e) => {
         false
     );
 };
-importBtn.addEventListener("click", importNotes);
+

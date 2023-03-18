@@ -186,7 +186,6 @@ body {
 }
 
 .card.card-fresh > p.text {
-  /* background: red; */
   overflow-wrap: break-word !important;
   word-wrap: break-word !important;
   hyphens: auto !important;
